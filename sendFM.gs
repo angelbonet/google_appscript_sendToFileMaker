@@ -25,7 +25,7 @@ function postToFilemaker(e) {
 
   //-- functions
 
-  function login() {
+    function login() {
       //authenticate to get FM-Data-token using http
       authUrl = serverPath.concat( filename , "/sessions" ) ;
       var data = {  
@@ -43,21 +43,26 @@ function postToFilemaker(e) {
             "payload": payload,
             "muteHttpExceptions": true
           };
-      var response = UrlFetchApp.fetch(authUrl,options);  //  Logger.log(response.getContentText());
+      var response = UrlFetchApp.fetch(authUrl,options);
+      // Logger.log(response.getContentText());
       var dataAll = JSON.parse(response.getContentText());
-      fmDataToken = dataAll.token;
+      // Logger.log(dataAll);
+      fmDataToken = dataAll.response.token;
   }
+  
 
   function post() {
       //  use fmDataToken to post to Filemaker using http
-      // var url = serverPath.concat("/record/",filename,"/",layout);  //   Logger.log(url);  //  var url = "https://fm107.beezwax.net/fmi/rest/api/record/epatt_rest/rest_data";
-      var url = serverPath.concat(filename,"/layouts/",layout,"/records");  //   Logger.log(url);  //  var url = "https://fm107.beezwax.net/fmi/rest/api/record/epatt_rest/rest_data";
+      // var url = serverPath.concat("/record/",filename,"/",layout);  //   Logger.log(url); 
+      var url = serverPath.concat(filename,"/layouts/",layout,"/records");
+      // Logger.log(url);
 
       var headers =
           {
             "content-type": "application/json",
-            "Authoritation": "Bearer " & fmDataToken
+            "Authorization": "Bearer "+fmDataToken
          };
+      Logger.log(headers);
       var data = { "fieldData": recordData } ;
       var payload = JSON.stringify(data);  //   Logger.log(payload);
       var options =
@@ -70,7 +75,7 @@ function postToFilemaker(e) {
       var response = UrlFetchApp.fetch(url,options);
       var fmApiResponse = response ;
   }
-
+  
   function logout() {
       // logout fmDataToken using http
       outUrl = serverPath.concat( filename , "/sessions" , fmDataToken ) ;
